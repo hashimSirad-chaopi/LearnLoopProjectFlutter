@@ -152,7 +152,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                     obscureText: _obscurePassword,
                     validator: _validatePassword,
                     decoration: InputDecoration(
-                      labelText: 'Password',
+                      labelText: 'Password:',
                       prefixIcon: const Icon(Icons.lock_outline),
                       border: const OutlineInputBorder(),
                       suffixIcon: IconButton(
