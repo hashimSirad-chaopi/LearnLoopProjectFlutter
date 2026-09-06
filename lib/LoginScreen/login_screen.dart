@@ -1,46 +1,51 @@
 import 'package:flutter/material.dart';
+import '../LoginScreen/create_account_screen.dart';
+import '../LoginScreen/forgot_password_screen.dart';
 
-class CreateAccountScreen extends StatefulWidget {
-  const CreateAccountScreen({super.key});
 
-  @override
-  State<CreateAccountScreen> createState() => _CreateAccountScreenState();
+
+void main() {
+  runApp(const MyApp());
 }
 
-class _CreateAccountScreenState extends State<CreateAccountScreen> {
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: const LoginScreen(),
+    );
+  }
+}
+
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-  TextEditingController();
 
   bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
   bool _isLoading = false;
 
   @override
   void dispose() {
-    _usernameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
-    _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  // TEMPORARY validators — replace with server-side validation results
-  // once this is connected to POST /api/register
-  String? _validateUsername(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Username is required';
-    }
-    if (value.trim().length < 3) {
-      return 'Username must be at least 3 characters';
-    }
-    return null;
-  }
-
+  // TEMPORARY validator — replace this with an actual API call
+  // (e.g. POST /api/login via Sanctum) once the REST API is ready.
   String? _validateEmail(String? value) {
     if (value == null || value.trim().isEmpty) {
       return 'Email is required';
@@ -62,19 +67,10 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     return null;
   }
 
-  String? _validateConfirmPassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please confirm your password';
-    }
-    if (value != _passwordController.text) {
-      return 'Passwords do not match';
-    }
-    return null;
-  }
-
-  // TEMPORARY handler — replace with an actual http/dio POST request to
-  // something like: http://<your-ip>:8000/api/register
-  void _handleCreateAccount() async {
+  // TEMPORARY login handler — simulates a network call.
+  // Swap the body of this method with your actual http/dio POST request
+  // to something like: http://<your-ip>:8000/api/login
+  void _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
@@ -84,54 +80,49 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
 
     setState(() => _isLoading = false);
 
+    // Placeholder success feedback — replace with real auth logic
+    // (store token, navigate to home screen, show real API errors, etc.)
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          'Account submitted for ${_usernameController.text.trim()} '
+          'Login submitted for ${_emailController.text.trim()} '
               '(not yet connected to API)',
         ),
       ),
     );
+  }
 
-    Navigator.pop(context); // back to login after "success"
+  void _goToCreateAccount() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const CreateAccountScreen()),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Create Account')),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+            padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Form(
               key: _formKey,
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Icon(Icons.person_add_alt_1_outlined, size: 64),
+                  const Icon(Icons.lock_outline, size: 72),
                   const SizedBox(height: 16),
                   Text(
-                    'Create Your Account',
+                    'Welcome Back',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 32),
-
-                  // Username field
-                  TextFormField(
-                    controller: _usernameController,
-                    validator: _validateUsername,
-                    decoration: const InputDecoration(
-                      labelText: 'Username',
-                      prefixIcon: Icon(Icons.person_outline),
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
 
                   // Email field
                   TextFormField(
@@ -152,7 +143,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                     obscureText: _obscurePassword,
                     validator: _validatePassword,
                     decoration: InputDecoration(
-                      labelText: 'Password:',
+                      labelText: 'Password',
                       prefixIcon: const Icon(Icons.lock_outline),
                       border: const OutlineInputBorder(),
                       suffixIcon: IconButton(
@@ -167,56 +158,48 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
-
-                  // Confirm password field
-                  TextFormField(
-                    controller: _confirmPasswordController,
-                    obscureText: _obscureConfirmPassword,
-                    validator: _validateConfirmPassword,
-                    decoration: InputDecoration(
-                      labelText: 'Confirm Password',
-                      prefixIcon: const Icon(Icons.lock_outline),
-                      border: const OutlineInputBorder(),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscureConfirmPassword
-                              ? Icons.visibility_outlined
-                              : Icons.visibility_off_outlined,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _obscureConfirmPassword =
-                            !_obscureConfirmPassword;
-                          });
-                        },
-                      ),
-                    ),
-                  ),
                   const SizedBox(height: 24),
 
-                  // Create account button
+                  // Login button
                   ElevatedButton(
-                    onPressed: _isLoading ? null : _handleCreateAccount,
+                    onPressed: _isLoading ? null : _handleLogin,
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      padding: const EdgeInsets.symmetric(vertical: 24),
+                      backgroundColor:Colors.orange,
+                      foregroundColor: Colors.black,
                     ),
                     child: _isLoading
                         ? const SizedBox(
                       height: 20,
                       width: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
+
                     )
-                        : const Text('Create Account'),
+                        : const Text('Login'),
+
                   ),
                   const SizedBox(height: 12),
 
-                  // Back to login
+                  // Create account button
+                  OutlinedButton(
+                    onPressed: _isLoading ? null : _goToCreateAccount,
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 24),
+                      backgroundColor:Colors.orange,
+                      foregroundColor: Colors.black,
+                    ),
+                    child: const Text('Create Account'),
+                  ),
+                  const SizedBox(height: 12),
                   TextButton(
-                    onPressed: _isLoading
-                        ? null
-                        : () => Navigator.pop(context),
-                    child: const Text('Already have an account? Login'),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const ForgotPasswordScreen()),
+                      );
+                    },
+                    style: TextButton.styleFrom(foregroundColor: Colors.black),
+                    child: const Text("Forgot Password?"),
                   ),
                 ],
               ),
