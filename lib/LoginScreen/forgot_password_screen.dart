@@ -131,12 +131,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ),
                   ],
 
-                  const SizedBox(height: 12),
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: TextButton.styleFrom(foregroundColor: Colors.black),
-                    child: const Text('Back to Login'),
-                  ),
+                  if (!_emailSent) ...[
+                    const SizedBox(height: 12),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: TextButton.styleFrom(foregroundColor: Colors.black),
+                      child: const Text('Back to Login'),
+                    ),
+                  ],
                 ],
               ),
             ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../LoginScreen/create_account_screen.dart';
 import '../LoginScreen/forgot_password_screen.dart';
+import '../MainScreen/browse_screen.dart';
+
 
 
 
@@ -83,14 +85,11 @@ class _LoginScreenState extends State<LoginScreen> {
     // Placeholder success feedback — replace with real auth logic
     // (store token, navigate to home screen, show real API errors, etc.)
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Login submitted for ${_emailController.text.trim()} '
-              '(not yet connected to API)',
-        ),
-      ),
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const BrowseScreen()),
     );
+
   }
 
   void _goToCreateAccount() {
