@@ -4,8 +4,6 @@ import 'matches_screen.dart';
 import 'exchange_screen.dart';
 import 'messages_screen.dart';
 import 'profile_screen.dart';
-import '../LoginScreen/login_screen.dart';
-
 
 // TEMPORARY profile header data — replace with real user data
 // once the REST API (e.g. GET /api/profile) is connected.
@@ -86,12 +84,9 @@ class AppDrawer extends StatelessWidget {
             leading: const Icon(Icons.logout),
             title: const Text('Logout'),
             onTap: () {
-              // TEMPORARY — replace with real logout (clear token, call
-              // POST /api/logout) once auth is connected.
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const LoginScreen()),
-              );
+              // TEMPORARY — replace with real logout (clear token, navigate
+              // to LoginScreen) once auth is connected.
+              Navigator.pop(context);
             },
           ),
           const SizedBox(height: 12),
@@ -102,7 +97,14 @@ class AppDrawer extends StatelessWidget {
 }
 
 // Shared AppBar so every screen matches the orange header in the mockups.
-PreferredSizeWidget learnLoopAppBar(String title) {
+// Pass a BuildContext so the bell icon can show a snackbar/navigate.
+// hasUnread controls the small red dot (TEMPORARY — replace with a real
+// unread-count check once GET /api/notifications is connected).
+PreferredSizeWidget learnLoopAppBar(
+    String title, {
+      BuildContext? context,
+      bool hasUnread = true,
+    }) {
   return AppBar(
     backgroundColor: Colors.orange,
     foregroundColor: Colors.black,
@@ -112,5 +114,40 @@ PreferredSizeWidget learnLoopAppBar(String title) {
       style: const TextStyle(fontWeight: FontWeight.w600),
     ),
     centerTitle: true,
+    actions: [
+      Stack(
+        alignment: Alignment.center,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.notifications_none),
+            onPressed: () {
+              // TEMPORARY — replace with navigation to a real
+              // NotificationsScreen once connected to the API.
+              if (context != null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Notifications tapped (not yet connected to API)'),
+                  ),
+                );
+              }
+            },
+          ),
+          if (hasUnread)
+            Positioned(
+              top: 10,
+              right: 10,
+              child: Container(
+                width: 8,
+                height: 8,
+                decoration: const BoxDecoration(
+                  color: Colors.red,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+        ],
+      ),
+      const SizedBox(width: 8),
+    ],
   );
 }

@@ -59,7 +59,7 @@ class BrowseScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: learnLoopAppBar('Browse'),
+      appBar: learnLoopAppBar('Browse', context: context),
       drawer: const AppDrawer(),
       body: ListView.builder(
         padding: const EdgeInsets.all(16),
